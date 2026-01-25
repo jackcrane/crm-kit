@@ -8,6 +8,13 @@
       "when": 1769382863498,
       "tag": "0000_goofy_ultimo",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1769384648140,
+      "tag": "0001_fair_supreme_intelligence",
+      "breakpoints": true
     }
   ]
 }
