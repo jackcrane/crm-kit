@@ -9,7 +9,6 @@ import { zerialize } from "zodex";
 
 export const post = [
   (req, res) => {
-    console.log(req.body);
     const validShape = loginSchema.safeParse(req.body);
 
     if (!validShape.success) {
@@ -18,7 +17,7 @@ export const post = [
         reason: "invalid_submission_format",
         message: "Invalid submission format.",
         comment:
-          "Refer to https://docs.crm-kit.com/requests.html#login for more information.",
+          "Refer to https://docs.crm-kit.com/blocks/access/login.html for more information.",
         validationError: validShape.error.flatten(),
       });
     }

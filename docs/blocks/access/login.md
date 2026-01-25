@@ -108,7 +108,7 @@ If you have malformed your request, you will recieve this response, accompanied 
   "status": "failure",
   "reason": "invalid_submission_format",
   "message": "Invalid submission format.",
-  "comment": "Refer to https://docs.crm-kit.com/requests.html#login for more information."
+  "comment": "Refer to https://docs.crm-kit.com/blocks/access/login.html for more information."
 }
 ```
 :::

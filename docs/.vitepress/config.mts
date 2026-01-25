@@ -38,7 +38,7 @@ export default defineConfig({
             items: [
               {
                 text: "Login",
-                link: "/blocks/login",
+                link: "/blocks/access/login",
               },
             ],
           },

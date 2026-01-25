@@ -89,6 +89,17 @@ async function registerRoutes(app, routesDir) {
         const routePath = getRoutePathFromFile(filePath, routesDir);
         const routeModule = await import("file://" + filePath);
 
+        const wrap = (handler) => async (req, res, next) => {
+          try {
+            await handler(req, res, next);
+          } catch (err) {
+            console.error(err);
+            if (!res.headersSent) {
+              res.status(500).send("Internal Server Error");
+            }
+          }
+        };
+
         // Supported HTTP methods
         ["get", "post", "put", "patch", "head", "options", "query"].forEach(
           (method) => {
@@ -98,8 +109,8 @@ async function registerRoutes(app, routesDir) {
 
             // If it's an array, use it as middleware chain
             const handlers = Array.isArray(routeModule[method])
-              ? routeModule[method]
-              : [routeModule[method]];
+              ? routeModule[method].map(wrap)
+              : [wrap(routeModule[method])];
 
             if (method === "query") {
               const wrappedHandlers = handlers.map((handler) => {
@@ -115,19 +126,15 @@ async function registerRoutes(app, routesDir) {
             }
 
             app[method](routePath, ...handlers);
-            // console.log(
-            //   `Registered route ${method.toUpperCase()} ${routePath}`
-            // );
           },
         );
 
         // Handle `del` for DELETE method
         if (routeModule.del) {
           const handlers = Array.isArray(routeModule.del)
-            ? routeModule.del
-            : [routeModule.del];
+            ? routeModule.del.map(wrap)
+            : [wrap(routeModule.del)];
           app.delete(routePath, ...handlers);
-          // console.log(`Registered route DELETE ${routePath}`);
         }
       }
     }
