@@ -34,8 +34,17 @@ export default defineConfig({
         text: "User Access",
         items: [
           {
-            text: "Login",
-            link: "/blocks/access/login",
+            text: "Existing Users",
+            items: [
+              {
+                text: "Login",
+                link: "/blocks/access/login",
+              },
+              {
+                text: "Revoking access",
+                link: "/blocks/access/revoking",
+              },
+            ],
           },
           {
             text: "New Accounts",
@@ -62,23 +71,23 @@ export default defineConfig({
               },
             ],
           },
+        ],
+      },
+      {
+        text: "Entitlements",
+        link: "/blocks/entitlements",
+        items: [
           {
-            text: "Entitlements",
-            link: "/blocks/access/entitlements",
-            items: [
-              {
-                text: "Listing all entitlements",
-                link: "/blocks/access/entitlements/listing",
-              },
-              {
-                text: "Retrieving a user's entitlements",
-                link: "/blocks/access/entitlements/retrieving",
-              },
-              {
-                text: "Modifying a user's entitlements",
-                link: "/blocks/access/entitlements/modifying",
-              },
-            ],
+            text: "Listing all entitlements",
+            link: "/blocks/entitlements/listing",
+          },
+          {
+            text: "Retrieving a user's entitlements",
+            link: "/blocks/entitlements/retrieving",
+          },
+          {
+            text: "Modifying a user's entitlements",
+            link: "/blocks/entitlements/modifying",
           },
         ],
       },

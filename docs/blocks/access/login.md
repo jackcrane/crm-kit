@@ -165,4 +165,4 @@ This is the auth type that is used for OAuth-based authentication.
 
 ### `Entitlement`
 
-Entitlement is an object that describes a user's entitlements to read or write data in your CRM. More information about entitlements can be found in the [Entitlements](/blocks/access/entitlements) page.
+Entitlement is an object that describes a user's entitlements to read or write data in your CRM. More information about entitlements can be found in the [Entitlements](/blocks/entitlements) page.
