@@ -1,0 +1,1 @@
+ALTER TABLE "applications" ADD COLUMN "loginEnabled" boolean DEFAULT true NOT NULL;

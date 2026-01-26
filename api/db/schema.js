@@ -6,6 +6,7 @@ import {
   pgEnum,
   jsonb,
   text,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
@@ -13,7 +14,13 @@ export const applicationsTable = pgTable("applications", {
   id: text()
     .primaryKey()
     .default(sql`'app_' || replace(gen_random_uuid()::text, '-', '')`),
+
   name: varchar({ length: 255 }).notNull(),
+  jwtValidityTime: text().notNull().default("1h"),
+  cfTurnstileSiteKey: varchar({ length: 255 }),
+  cfTurnstileSecretKey: varchar({ length: 255 }),
+  loginEnabled: boolean().notNull().default(true),
+
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });

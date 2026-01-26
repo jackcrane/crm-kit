@@ -7,7 +7,7 @@ const loginSchema = z.object({
 });
 import { zerialize } from "zodex";
 import { db } from "../../../util/db.js";
-import { usersTable } from "../../../db/schema.js";
+import { applicationsTable, usersTable } from "../../../db/schema.js";
 import { and, eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -61,13 +61,22 @@ export const post = [
         return res.status(401).json(errors.invalid_credentials);
       }
 
+      const [application] = await db
+        .select()
+        .from(applicationsTable)
+        .where(eq(applicationsTable.id, req.applicationId));
+
+      if (application.loginEnabled === false) {
+        return res.status(401).json(errors.invalid_credentials);
+      }
+
       const token = jwt.sign(
         {
           userId: user.id,
         },
         process.env.JWT_SECRET,
         {
-          expiresIn: "1h",
+          expiresIn: application.jwtValidityTime,
         },
       );
 
