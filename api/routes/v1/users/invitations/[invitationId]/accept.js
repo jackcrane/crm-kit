@@ -1,10 +1,11 @@
 import z from "zod";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { and, eq, or, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "../../../../../util/db.js";
 import { invitationsTable, usersTable } from "../../../../../db/schema.js";
 import { validateTurnstile } from "../../../../../util/validateTurnstile.js";
+import { findInvitationByIdOrCode } from "../../../../../util/invitations.js";
 
 const acceptSchema = z.object({
   password: z.string().min(8),
@@ -39,35 +40,6 @@ const errors = {
   },
 };
 
-async function findInvitation(invitationId, applicationId) {
-  await db
-    .update(invitationsTable)
-    .set({ status: "expired", updatedAt: new Date() })
-    .where(
-      and(
-        eq(invitationsTable.applicationId, applicationId),
-        eq(invitationsTable.status, "pending"),
-        sql`${invitationsTable.createdAt} < now() - interval '24 hours'`,
-      ),
-    );
-
-  const [invitation] = await db
-    .select()
-    .from(invitationsTable)
-    .where(
-      and(
-        or(
-          eq(invitationsTable.id, invitationId),
-          eq(invitationsTable.code, invitationId),
-        ),
-        eq(invitationsTable.applicationId, applicationId),
-      ),
-    )
-    .limit(1);
-
-  return invitation ?? null;
-}
-
 export const post = [
   async (req, res) => {
     const parsed = acceptSchema.safeParse(req.body);
@@ -78,7 +50,7 @@ export const post = [
       });
     }
 
-    const invitation = await findInvitation(
+    const invitation = await findInvitationByIdOrCode(
       req.params.invitationId,
       req.applicationId,
     );

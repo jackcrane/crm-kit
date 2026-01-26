@@ -45,6 +45,10 @@ export default defineConfig({
                 text: "Inviting users",
               },
               {
+                link: "/blocks/access/invitations/resending",
+                text: "Resending invitations",
+              },
+              {
                 link: "/blocks/access/invitations/accepting",
                 text: "Accepting invitations",
               },

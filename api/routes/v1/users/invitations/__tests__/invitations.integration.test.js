@@ -258,6 +258,106 @@ describe("✅ Invitations endpoints", () => {
     expect(updated.status).toBe("rescinded");
   });
 
+  it("resends a pending invitation and refreshes the code", async () => {
+    const application = await createApplication();
+    const invitation = await createInvitation({
+      applicationId: application.id,
+    });
+
+    const { user } = await createUser({
+      applicationId: application.id,
+      entitlements: ["invitations:write"],
+    });
+    const token = makeToken(user.id);
+
+    const response = await request(serverState.server.baseUrl)
+      .post(`/v1/users/invitations/${invitation.id}/resend`)
+      .set("authorization", `Bearer ${token}`)
+      .set("x-application-id", application.id);
+
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe("success");
+    expect(response.body.invitation.id).toBe(invitation.id);
+    expect(response.body.invitation.status).toBe("pending");
+    expect(response.body.invitation.code).not.toBe(invitation.code);
+
+    const [updated] = await testDb
+      .select()
+      .from(invitationsTable)
+      .where(eq(invitationsTable.id, invitation.id));
+    expect(updated.code).not.toBe(invitation.code);
+    expect(updated.status).toBe("pending");
+  });
+
+  it("resends an expired invitation and reopens it", async () => {
+    const application = await createApplication();
+    const invitation = await createInvitation({
+      applicationId: application.id,
+      createdAt: new Date(Date.now() - 25 * 60 * 60 * 1000),
+    });
+
+    const { user } = await createUser({
+      applicationId: application.id,
+      entitlements: ["invitations:write"],
+    });
+    const token = makeToken(user.id);
+
+    const response = await request(serverState.server.baseUrl)
+      .post(`/v1/users/invitations/${invitation.id}/resend`)
+      .set("authorization", `Bearer ${token}`)
+      .set("x-application-id", application.id);
+
+    expect(response.status).toBe(200);
+    expect(response.body.invitation.status).toBe("pending");
+
+    const [updated] = await testDb
+      .select()
+      .from(invitationsTable)
+      .where(eq(invitationsTable.id, invitation.id));
+    expect(updated.status).toBe("pending");
+  });
+
+  it("rejects resending an accepted invitation", async () => {
+    const application = await createApplication();
+    const invitation = await createInvitation({
+      applicationId: application.id,
+      status: "accepted",
+    });
+
+    const { user } = await createUser({
+      applicationId: application.id,
+      entitlements: ["invitations:write"],
+    });
+    const token = makeToken(user.id);
+
+    const response = await request(serverState.server.baseUrl)
+      .post(`/v1/users/invitations/${invitation.id}/resend`)
+      .set("authorization", `Bearer ${token}`)
+      .set("x-application-id", application.id);
+
+    expect(response.status).toBe(400);
+    expect(response.body.reason).toBe("invitation_not_pending");
+  });
+
+  it("rejects resending without entitlements", async () => {
+    const application = await createApplication();
+    const invitation = await createInvitation({
+      applicationId: application.id,
+    });
+
+    const { user } = await createUser({
+      applicationId: application.id,
+    });
+    const token = makeToken(user.id);
+
+    const response = await request(serverState.server.baseUrl)
+      .post(`/v1/users/invitations/${invitation.id}/resend`)
+      .set("authorization", `Bearer ${token}`)
+      .set("x-application-id", application.id);
+
+    expect(response.status).toBe(403);
+  });
+
   it("rejects rescinding a non-pending invitation", async () => {
     const application = await createApplication();
     const invitation = await createInvitation({

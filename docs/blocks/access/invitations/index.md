@@ -7,7 +7,7 @@ sidebar: true
 
 Inviting users to your CRM is a common use case. It is how you can grant access to your CRM to new people. When inviting a new user to your CRM, you will either need to provide a user's email address or request an invitation code for the user to use.
 
-The invitation API request must come from a user that has been authenticated and has the appropriate entitlements to perform this action.
+The invitation API request must come from a user that has been authenticated and has the appropriate entitlements to perform this action. An invitation is valid for 24 hours, after which it will be expired, and you will need to [resend the invitation](resending.html).
 
 ## Inviting users
 

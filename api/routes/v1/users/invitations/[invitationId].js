@@ -1,54 +1,11 @@
-import { and, or, eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "../../../../util/db.js";
 import { invitationsTable } from "../../../../db/schema.js";
 import { entitlements as requireEntitlements } from "../../../../util/entitlements.js";
-
-function toPublicInvitation(row) {
-  return {
-    id: row.id,
-    email: row.email,
-    name: row.name,
-    status: row.status,
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
-  };
-}
-
-async function expireOldInvitations(applicationId) {
-  await db
-    .update(invitationsTable)
-    .set({ status: "expired", updatedAt: new Date() })
-    .where(
-      and(
-        eq(invitationsTable.applicationId, applicationId),
-        eq(invitationsTable.status, "pending"),
-        sql`${invitationsTable.createdAt} < now() - interval '24 hours'`,
-      ),
-    );
-}
-
-async function findInvitation(invitationId, applicationId) {
-  await expireOldInvitations(applicationId);
-
-  const [invitation] = await db
-    .select()
-    .from(invitationsTable)
-    .where(
-      or(
-        and(
-          eq(invitationsTable.id, invitationId),
-          eq(invitationsTable.applicationId, applicationId),
-        ),
-        and(
-          eq(invitationsTable.code, invitationId),
-          eq(invitationsTable.applicationId, applicationId),
-        ),
-      ),
-    )
-    .limit(1);
-
-  return invitation ?? null;
-}
+import {
+  findInvitationByIdOrCode,
+  toPublicInvitation,
+} from "../../../../util/invitations.js";
 
 const errors = {
   invitation_not_found: {
@@ -71,7 +28,7 @@ export const get = [
   async (req, res) => {
     const invitationId = req.params.invitationId;
 
-    const invitation = await findInvitation(
+    const invitation = await findInvitationByIdOrCode(
       invitationId,
       req.applicationId,
     );
@@ -95,7 +52,7 @@ export const del = [
   async (req, res) => {
     const invitationId = req.params.invitationId;
 
-    const invitation = await findInvitation(
+    const invitation = await findInvitationByIdOrCode(
       invitationId,
       req.applicationId,
     );

@@ -1,9 +1,13 @@
 import z from "zod";
-import crypto from "crypto";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "../../../../util/db.js";
 import { invitationsTable } from "../../../../db/schema.js";
 import { entitlements as requireEntitlements } from "../../../../util/entitlements.js";
+import {
+  expirePendingInvitations,
+  generateInvitationCode,
+  toPublicInvitation,
+} from "../../../../util/invitations.js";
 
 const MAX_LIMIT = 100;
 
@@ -15,37 +19,13 @@ const invitationInputSchema = z.object({
   ctaUrl: z.string().optional(),
 });
 
-function generateCode() {
-  return crypto.randomBytes(12).toString("hex");
-}
-
 function normalizePayload(body) {
   const arrayPayload = Array.isArray(body) ? body : [body];
   return arrayPayload.map((item) => invitationInputSchema.parse(item));
 }
 
 async function expireOldInvitations(applicationId) {
-  await db
-    .update(invitationsTable)
-    .set({ status: "expired", updatedAt: new Date() })
-    .where(
-      and(
-        eq(invitationsTable.applicationId, applicationId),
-        eq(invitationsTable.status, "pending"),
-        sql`${invitationsTable.createdAt} < now() - interval '24 hours'`,
-      ),
-    );
-}
-
-function toPublicInvitation(row) {
-  return {
-    id: row.id,
-    email: row.email,
-    name: row.name,
-    status: row.status,
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
-  };
+  await expirePendingInvitations(applicationId);
 }
 
 export const post = [
@@ -85,7 +65,7 @@ export const post = [
           .set({
             name: payload.name ?? existingRescinded.name,
             entitlements: payload.entitlements ?? [],
-            code: generateCode(),
+            code: generateInvitationCode(),
             status: "pending",
             updatedAt: new Date(),
           })
@@ -103,7 +83,7 @@ export const post = [
           email: payload.email,
           name: payload.name,
           entitlements: payload.entitlements ?? [],
-          code: generateCode(),
+          code: generateInvitationCode(),
         })
         .returning();
 
