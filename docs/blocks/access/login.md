@@ -11,6 +11,12 @@ CRM Kit provides 2 methods for authenticating users:
 - A user-facing login endpoint that you can hit from your application's frontend
 - A backend endpoint that allows you to requisition an access token on behalf of another user.
 
+:::tip
+
+This documentation page is very technical and is a detailed overview of the login process. Visit the [Login Builder](/blocks/access/login-builder.html) page for a step-by-step guide for building a login form for your application.
+
+:::
+
 ## Form endpoint
 
 Before rendering your login form, make a request to the form endpoint to get metadata about the login form.
@@ -23,10 +29,10 @@ This endpoint will return a JSON object with the following fields:
 
 ```json
 {
-  loginAvailable: Boolean,
-  types: [AuthType], // List of supported authentication types. Right now, only "password" is supported.
-  siteKey: <site-key> // Your Cloudflare Turnstile site key.
-  requiresCaptcha: Boolean // Whether or not the login requires a captcha.
+  "loginAvailable": Boolean,
+  "types": [AuthType], // List of supported authentication types. Right now, only "password" is supported.
+  "siteKey": <site-key>, // Your Cloudflare Turnstile site key.
+  "requiresCaptcha": Boolean // Whether or not the login requires a captcha.
 }
 ```
 
@@ -154,7 +160,7 @@ This is the auth type that is used for OAuth-based authentication.
 ```json
 {
   "type": "oauth",
-  loginUrl: <login-url>,
+  "loginUrl": <login-url>,
   "provider": <provider-name>, // Google, Facebook, SSO, etc.
   "imageUrl": <image-url>, // URL to an image that represents the provider,
 }
