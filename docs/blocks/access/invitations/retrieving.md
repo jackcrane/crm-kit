@@ -63,6 +63,30 @@ This endpoint will return a list of all invitations that have been sent to users
 }
 ```
 
+### Searching
+
+You can search for invitations by providing a `search` query parameter. The search query will be matched against the `email`, `name`, `code`, and `id` (starting with `inv_`) fields.
+
+```
+GET https://api.crm-kit.com/v1/users/invitations?search=john
+```
+
+#### Refining search results
+
+You can refine the search by providing a `searchFields` query parameter. The search query will be matched against the specified fields.
+
+```
+GET https://api.crm-kit.com/v1/users/invitations?search=john&searchFields=email,name
+```
+
+#### Advanced searches
+
+You can run advanced searches by providing a `searchDsl` query parameter. This will be a JSON object as described in the [Search DSL documentation](/blocks/search-dsl.html).
+
+```
+GET https://api.crm-kit.com/v1/users/invitations?searchDsl={"email": {"EQ": "john@example.com"}}
+```
+
 ### Pagination
 
 The response will contain a `total` field including the total number of invitations, the `page` field indicating the current page, and the `limit` field indicating the number of invitations per page.

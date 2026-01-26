@@ -125,6 +125,8 @@ async function registerRoutes(app, routesDir) {
               return;
             }
 
+            // console.log("Registering route", method, routePath);
+
             app[method](routePath, ...handlers);
           },
         );

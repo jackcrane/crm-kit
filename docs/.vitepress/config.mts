@@ -28,6 +28,10 @@ export default defineConfig({
             text: "API Requests",
             link: "/requests",
           },
+          {
+            text: "Search DSL",
+            link: "/blocks/search-dsl",
+          },
         ],
       },
       {
