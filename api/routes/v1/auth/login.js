@@ -94,6 +94,10 @@ export const post = [
       }
 
       if (user.mfaEnabled) {
+        if (!user.otpSecret) {
+          return res.status(401).json(errors.invalid_credentials);
+        }
+
         const challengeNonce = jwt.sign(
           {
             challengeType: "mfa",

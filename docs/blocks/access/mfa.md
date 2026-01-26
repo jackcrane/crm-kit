@@ -30,12 +30,12 @@ POST https://api.crm-kit.com/v1/auth/challenge
 ```json
 {
   "nonce": "<challenge-nonce>",
-  "response": "123456",
+  "response": "<code-from-authenticator>",
   "cf-turnstile-response": "<token>"
 }
 ```
 
-For the current demo environment, the MFA code is always `123456`. The `cf-turnstile-response` field is required when captcha enforcement is enabled for your application.
+Codes are time-based OTPs generated from the user's `otpSecret` (stored alongside the user record). The `cf-turnstile-response` field is required when captcha enforcement is enabled for your application.
 
 ## Successful response
 
@@ -55,3 +55,7 @@ On a valid code, the user receives the same payload as a normal login:
 ```
 
 If the nonce is invalid, expired, or the MFA code is incorrect, you will receive a `failure` response with details and should prompt the user to try again.
+
+## User MFA secret
+
+Each MFA-enabled user must have an `otpSecret` stored with their account. CRM Kit uses standard TOTP codes (RFC 6238) generated from that secret; users can pair any compatible authenticator app to produce the one-time codes.

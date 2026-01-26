@@ -5,6 +5,7 @@ import { db } from "../../../util/db.js";
 import { applicationsTable, usersTable } from "../../../db/schema.js";
 import { and, eq } from "drizzle-orm";
 import { validateTurnstile } from "../../../util/validateTurnstile.js";
+import { authenticator } from "otplib";
 
 const challengeSchema = z.object({
   nonce: z.string(),
@@ -95,11 +96,18 @@ export const post = [
         ),
       );
 
-    if (!user || !user.mfaEnabled) {
+    if (!user || !user.mfaEnabled || !user.otpSecret) {
       return res.status(401).json(errors.invalid_challenge);
     }
 
-    if (data.response !== "123456") {
+    let isValid = false;
+    try {
+      isValid = authenticator.check(data.response, user.otpSecret);
+    } catch (err) {
+      return res.status(401).json(errors.invalid_challenge_response);
+    }
+
+    if (!isValid) {
       return res.status(401).json(errors.invalid_challenge_response);
     }
 

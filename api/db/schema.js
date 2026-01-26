@@ -39,6 +39,7 @@ export const usersTable = pgTable("users", {
   password: varchar({ length: 255 }).notNull(),
 
   mfaEnabled: boolean().notNull().default(false),
+  otpSecret: text(),
 
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),

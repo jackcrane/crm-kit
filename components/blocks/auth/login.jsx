@@ -180,7 +180,7 @@ const MfaLogin = ({ config, challenge, onAuthenticated, onBack }) => {
       <h3>Enter your MFA code</h3>
       <input
         className="input"
-        placeholder="123456"
+        placeholder="MFA code"
         value={form.mfaCode}
         onChange={onChange("mfaCode")}
       />
