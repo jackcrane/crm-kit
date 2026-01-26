@@ -99,6 +99,20 @@
       "when": 1769390900000,
       "tag": "0013_expand_entitlements",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1769470000000,
+      "tag": "0014_expire_invitations",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1769470100000,
+      "tag": "0015_revoke_users",
+      "breakpoints": true
     }
   ]
 }
