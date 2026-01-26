@@ -54,6 +54,10 @@ export default defineConfig({
               },
             ],
           },
+          {
+            text: "Entitlements",
+            link: "/entitlements",
+          },
         ],
       },
     ],
