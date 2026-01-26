@@ -35,8 +35,21 @@ export async function startTestServer() {
   return {
     baseUrl: BASE_URL,
     stop: async () => {
+      if (serverProcess.killed || serverProcess.exitCode !== null) {
+        return;
+      }
+
+      const exitPromise = once(serverProcess, "exit");
       serverProcess.kill("SIGTERM");
-      await once(serverProcess, "exit");
+
+      await Promise.race([
+        exitPromise,
+        delay(5000).then(() => {
+          if (serverProcess.exitCode === null) {
+            serverProcess.kill("SIGKILL");
+          }
+        }),
+      ]);
     },
   };
 }

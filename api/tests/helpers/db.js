@@ -19,7 +19,17 @@ const pool = new pg.Pool({
 export const testDb = drizzle(pool);
 
 export async function ensureExtensions() {
-  await testDb.execute(sql`CREATE EXTENSION IF NOT EXISTS "pgcrypto";`);
+  try {
+    await testDb.execute(
+      sql`CREATE EXTENSION IF NOT EXISTS "pgcrypto";`,
+    );
+  } catch (err) {
+    if (err?.code === "23505") {
+      // Extension already exists from a parallel test
+      return;
+    }
+    throw err;
+  }
 }
 
 export async function migrateDatabase() {
@@ -53,6 +63,7 @@ export async function createUser({
   name = "Test User",
   mfaEnabled = false,
   otpSecret,
+  entitlements = [],
 } = {}) {
   if (!applicationId) {
     throw new Error("applicationId is required to create a user");
@@ -70,6 +81,7 @@ export async function createUser({
       password: hashedPassword,
       mfaEnabled,
       otpSecret: secret,
+      entitlements,
     })
     .returning();
 

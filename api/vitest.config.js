@@ -7,5 +7,6 @@ export default defineConfig({
     setupFiles: ["./tests/helpers/setup.js"],
     hookTimeout: 30000,
     testTimeout: 30000,
+    threads: false,
   },
 });

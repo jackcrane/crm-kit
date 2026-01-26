@@ -40,6 +40,7 @@ export const usersTable = pgTable("users", {
 
   mfaEnabled: boolean().notNull().default(false),
   otpSecret: text(),
+  entitlements: text().array().notNull().default(sql`'{}'::text[]`),
 
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),

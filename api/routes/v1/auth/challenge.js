@@ -132,7 +132,7 @@ export const post = [
         name: user.name,
         email: user.email,
       },
-      userPermissions: [],
+      userPermissions: user.entitlements ?? [],
     });
   },
 ];

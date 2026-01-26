@@ -11,6 +11,7 @@ The following entitlements are available:
 
 | Name | Description |
 | --- | --- |
+| `superuser` | This user is a superuser and has all permissions. |
 | `users:read` | The user can read all users. |
 | `users:write` | The user can update and delete users. Users need `invitations:write` to create new users |
 | `invitations:read` | The user can read all invitations. |

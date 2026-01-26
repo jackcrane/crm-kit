@@ -135,7 +135,7 @@ export const post = [
           name: user.name,
           email: user.email,
         },
-        userPermissions: [],
+        userPermissions: user.entitlements ?? [],
       });
     } else {
       return res.status(400).json({
