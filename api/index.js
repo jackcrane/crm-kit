@@ -4,6 +4,9 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
+import { db } from "./util/db.js";
+import { applicationsTable } from "./db/schema.js";
+import { eq } from "drizzle-orm";
 
 const app = express();
 app.use(cors());
@@ -15,7 +18,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   req.applicationId = req.headers["x-application-id"];
 
   if (!req.applicationId) {
@@ -27,6 +30,21 @@ app.use((req, res, next) => {
           "Refer to https://docs.crm-kit.com/requests.html#application-id for more information.",
       });
     }
+  } else {
+    const [application] = await db
+      .select()
+      .from(applicationsTable)
+      .where(eq(applicationsTable.id, req.applicationId));
+
+    if (!application) {
+      return res.status(400).json({
+        message: "Invalid application ID.",
+        comment:
+          "Refer to https://docs.crm-kit.com/requests.html#application-id for more information.",
+      });
+    }
+
+    req.application = application;
   }
 
   next();

@@ -19,7 +19,7 @@ export const applicationsTable = pgTable("applications", {
   jwtValidityTime: text().notNull().default("1h"),
   cfTurnstileSiteKey: varchar({ length: 255 }),
   cfTurnstileSecretKey: varchar({ length: 255 }),
-  loginEnabled: boolean().notNull().default(true),
+  loginAvailable: boolean().notNull().default(true),
   enforceTurnstsile: boolean().notNull().default(false),
 
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),

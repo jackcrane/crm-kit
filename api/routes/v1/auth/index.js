@@ -1,9 +1,10 @@
 export const get = [
-  (req, res) => {
+  async (req, res) => {
     return res.json({
-      loginAvailable: true,
+      loginAvailable: req.application.loginAvailable,
       types: [{ type: "password" }],
-      siteKey: process.env.CLOUDFLARE_TURNSTILE_SITE_KEY,
+      siteKey: req.application.cfTurnstileSiteKey,
+      requiresCaptcha: req.application.enforceTurnstile,
     });
   },
 ];

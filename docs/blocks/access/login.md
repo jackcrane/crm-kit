@@ -26,6 +26,7 @@ This endpoint will return a JSON object with the following fields:
   loginAvailable: Boolean,
   types: [AuthType], // List of supported authentication types. Right now, only "password" is supported.
   siteKey: <site-key> // Your Cloudflare Turnstile site key.
+  requiresCaptcha: Boolean // Whether or not the login requires a captcha.
 }
 ```
 

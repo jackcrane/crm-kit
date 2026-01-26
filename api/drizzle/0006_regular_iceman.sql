@@ -1,0 +1,1 @@
+ALTER TABLE "applications" RENAME COLUMN "loginEnabled" TO "loginAvailable";
