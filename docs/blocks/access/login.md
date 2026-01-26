@@ -7,10 +7,6 @@ sidebar: true
 
 Users need to be able to login to view your CRM. Providing secure, reliable access to your CRM is critically important to the utility of your application.
 
-CRM Kit provides 2 methods for authenticating users:
-- A user-facing login endpoint that you can hit from your application's frontend
-- A backend endpoint that allows you to requisition an access token on behalf of another user.
-
 :::tip
 
 This documentation page is very technical and is a detailed overview of the login process. Visit the [Login Builder](/blocks/access/login-builder.html) page for a step-by-step guide for building a login form for your application.
