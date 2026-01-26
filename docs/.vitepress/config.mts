@@ -52,6 +52,10 @@ export default defineConfig({
                 link: "/blocks/access/invitations/retrieving",
                 text: "Retrieving invitations",
               },
+              {
+                link: "/blocks/access/invitations/rescinding",
+                text: "Rescinding invitations",
+              },
             ],
           },
           {

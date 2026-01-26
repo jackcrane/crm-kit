@@ -149,4 +149,91 @@ describe("✅ Invitations endpoints", () => {
       .where(eq(usersTable.email, invitation.email));
     expect(newUser).toBeTruthy();
   });
+
+  it("rescinds a pending invitation when caller has write entitlements", async () => {
+    const application = await createApplication();
+    const invitation = await createInvitation({
+      applicationId: application.id,
+    });
+
+    const { user } = await createUser({
+      applicationId: application.id,
+      entitlements: ["invitations:write"],
+    });
+    const token = makeToken(user.id);
+
+    const response = await request(serverState.server.baseUrl)
+      .delete(`/v1/users/invitations/${invitation.id}`)
+      .set("authorization", `Bearer ${token}`)
+      .set("x-application-id", application.id);
+
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe("success");
+
+    const [updated] = await testDb
+      .select()
+      .from(invitationsTable)
+      .where(eq(invitationsTable.id, invitation.id));
+
+    expect(updated.status).toBe("rescinded");
+  });
+
+  it("rejects rescinding a non-pending invitation", async () => {
+    const application = await createApplication();
+    const invitation = await createInvitation({
+      applicationId: application.id,
+      status: "accepted",
+    });
+
+    const { user } = await createUser({
+      applicationId: application.id,
+      entitlements: ["invitations:write"],
+    });
+    const token = makeToken(user.id);
+
+    const response = await request(serverState.server.baseUrl)
+      .delete(`/v1/users/invitations/${invitation.id}`)
+      .set("authorization", `Bearer ${token}`)
+      .set("x-application-id", application.id);
+
+    expect(response.status).toBe(400);
+    expect(response.body.reason).toBe("invitation_not_pending");
+  });
+
+  it("rejects rescinding without entitlements", async () => {
+    const application = await createApplication();
+    const invitation = await createInvitation({
+      applicationId: application.id,
+    });
+
+    const { user } = await createUser({
+      applicationId: application.id,
+    });
+    const token = makeToken(user.id);
+
+    const response = await request(serverState.server.baseUrl)
+      .delete(`/v1/users/invitations/${invitation.id}`)
+      .set("authorization", `Bearer ${token}`)
+      .set("x-application-id", application.id);
+
+    expect(response.status).toBe(403);
+  });
+
+  it("returns 404 when rescinding an unknown invitation", async () => {
+    const application = await createApplication();
+
+    const { user } = await createUser({
+      applicationId: application.id,
+      entitlements: ["invitations:write"],
+    });
+    const token = makeToken(user.id);
+
+    const response = await request(serverState.server.baseUrl)
+      .delete(`/v1/users/invitations/does-not-exist`)
+      .set("authorization", `Bearer ${token}`)
+      .set("x-application-id", application.id);
+
+    expect(response.status).toBe(404);
+    expect(response.body.reason).toBe("invitation_not_found");
+  });
 });
