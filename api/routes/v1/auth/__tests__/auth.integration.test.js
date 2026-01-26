@@ -88,6 +88,28 @@ describe("✅ Auth endpoints", () => {
     });
   });
 
+  it("rejects login for a revoked user", async () => {
+    const application = await createApplication();
+    const { user } = await createUser({
+      applicationId: application.id,
+      password: "CorrectPassword1!",
+      status: "revoked",
+    });
+
+    const response = await request(serverState.server.baseUrl)
+      .post("/v1/auth/login")
+      .set("x-application-id", application.id)
+      .send({
+        email: user.email,
+        password: "CorrectPassword1!",
+        type: "password",
+        "cf-turnstile-response": "dummy-token",
+      });
+
+    expect(response.status).toBe(401);
+    expect(response.body.reason).toBe("invalid_credentials");
+  });
+
   it("issues an MFA challenge and completes it successfully", async () => {
     const application = await createApplication();
     const { user, otpSecret } = await createUser({

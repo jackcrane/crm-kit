@@ -78,6 +78,7 @@ async function fetchUser(userId, applicationId) {
       applicationId: usersTable.applicationId,
       name: usersTable.name,
       email: usersTable.email,
+      status: usersTable.status,
       entitlements: usersTable.entitlements,
     })
     .from(usersTable)
@@ -150,7 +151,7 @@ export function entitlements(required) {
     }
 
     const user = await fetchUser(decoded.userId, req.applicationId);
-    if (!user) {
+    if (!user || user.status !== "active") {
       return res
         .status(401)
         .json({ status: "failure", reason: "unauthorized" });

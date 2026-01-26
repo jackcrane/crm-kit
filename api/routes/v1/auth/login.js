@@ -63,6 +63,10 @@ export const post = [
         return res.status(401).json(errors.invalid_credentials);
       }
 
+      if (user.status !== "active") {
+        return res.status(401).json(errors.invalid_credentials);
+      }
+
       if (!bcrypt.compareSync(data.password, user.password)) {
         return res.status(401).json(errors.invalid_credentials);
       }

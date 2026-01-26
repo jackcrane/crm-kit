@@ -96,7 +96,12 @@ export const post = [
         ),
       );
 
-    if (!user || !user.mfaEnabled || !user.otpSecret) {
+    if (
+      !user ||
+      user.status !== "active" ||
+      !user.mfaEnabled ||
+      !user.otpSecret
+    ) {
       return res.status(401).json(errors.invalid_challenge);
     }
 
@@ -131,6 +136,7 @@ export const post = [
         id: user.id,
         name: user.name,
         email: user.email,
+        status: user.status,
       },
       userPermissions: user.entitlements ?? [],
     });

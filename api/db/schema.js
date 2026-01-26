@@ -20,6 +20,8 @@ export const entitlementEnum = pgEnum("entitlement", [
   "entitlements:write",
 ]);
 
+export const userStatusEnum = pgEnum("user_status", ["active", "revoked"]);
+
 export const applicationsTable = pgTable("applications", {
   id: text()
     .primaryKey()
@@ -54,6 +56,8 @@ export const usersTable = pgTable("users", {
     .array()
     .notNull()
     .default(sql`'{}'::entitlement[]`),
+
+  status: userStatusEnum("status").notNull().default("active"),
 
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),

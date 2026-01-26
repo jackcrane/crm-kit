@@ -75,6 +75,7 @@ export async function createUser({
   mfaEnabled = false,
   otpSecret,
   entitlements = [],
+  status = "active",
 } = {}) {
   if (!applicationId) {
     throw new Error("applicationId is required to create a user");
@@ -93,6 +94,7 @@ export async function createUser({
       mfaEnabled,
       otpSecret: secret,
       entitlements,
+      status,
     })
     .returning();
 

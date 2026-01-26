@@ -4,6 +4,7 @@ import {
   ensureTestDatabase,
   shutdownTestDatabase,
 } from "./dockerDb.js";
+import { migrateDatabase } from "./db.js";
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ const databaseReady = ensureTestDatabase();
 
 beforeAll(async () => {
   await databaseReady;
+  await migrateDatabase();
 });
 
 afterAll(async () => {

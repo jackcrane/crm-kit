@@ -28,7 +28,7 @@ export async function expirePendingInvitations(applicationId) {
       and(
         eq(invitationsTable.applicationId, applicationId),
         eq(invitationsTable.status, "pending"),
-        sql`${invitationsTable.createdAt} < now() - interval '${INVITATION_EXPIRY_HOURS} hours'`,
+        sql`${invitationsTable.createdAt} < now() - make_interval(hours => ${INVITATION_EXPIRY_HOURS})`,
       ),
     );
 }

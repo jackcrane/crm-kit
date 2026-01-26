@@ -162,5 +162,31 @@ describe("Entitlements utilities", () => {
       expect(response.body.user.entitlements).toEqual(["users:read"]);
       expect(response.body.user.password).toBeUndefined();
     });
+
+    it("rejects requests from revoked users even with a valid token", async () => {
+      const application = await createApplication();
+      const { user } = await createUser({
+        applicationId: application.id,
+        entitlements: ["users:read"],
+        status: "revoked",
+      });
+      const token = makeToken(user.id);
+
+      const app = express();
+      app.use((req, _res, next) => {
+        req.applicationId = application.id;
+        next();
+      });
+      app.get("/protected", entitlements(["users:read"]), (_req, res) =>
+        res.json({ ok: true }),
+      );
+
+      const response = await request(app)
+        .get("/protected")
+        .set("authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(401);
+      expect(response.body.reason).toBe("unauthorized");
+    });
   });
 });
