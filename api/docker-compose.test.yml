@@ -30,6 +30,7 @@ services:
       NODE_ENV: test
     volumes:
       - ./:/app
+      - /app/node_modules
     command: >
       sh -c "${TEST_COMMAND:-npm ci && npm run migrate:apply && npm run test:integration}"
 

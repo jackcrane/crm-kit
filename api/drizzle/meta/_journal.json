@@ -85,6 +85,13 @@
       "when": 1769390700000,
       "tag": "0011_perfect_hobgoblin",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1769390800000,
+      "tag": "0012_entitlement_enum",
+      "breakpoints": true
     }
   ]
 }

@@ -10,6 +10,14 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
+export const entitlementEnum = pgEnum("entitlement", [
+  "superuser",
+  "users:read",
+  "users:write",
+  "invitations:read",
+  "invitations:write",
+]);
+
 export const applicationsTable = pgTable("applications", {
   id: text()
     .primaryKey()
@@ -40,7 +48,10 @@ export const usersTable = pgTable("users", {
 
   mfaEnabled: boolean().notNull().default(false),
   otpSecret: text(),
-  entitlements: text().array().notNull().default(sql`'{}'::text[]`),
+  entitlements: entitlementEnum("entitlements")
+    .array()
+    .notNull()
+    .default(sql`'{}'::entitlement[]`),
 
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
@@ -86,7 +97,10 @@ export const invitationsTable = pgTable("invitations", {
 
   email: varchar({ length: 255 }).notNull(),
   name: varchar({ length: 255 }),
-  entitlements: text().array().notNull().default(sql`'{}'::text[]`),
+  entitlements: entitlementEnum("entitlements")
+    .array()
+    .notNull()
+    .default(sql`'{}'::entitlement[]`),
   code: text().notNull().unique(),
   status: invitationStatusEnum("status").notNull().default("pending"),
 
