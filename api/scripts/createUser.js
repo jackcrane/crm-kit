@@ -1,5 +1,6 @@
 import { applicationsTable, eventsTable, usersTable } from "../db/schema.js";
 import { db } from "../util/db.js";
+import bcrypt from "bcrypt";
 
 db.transaction(async (tx) => {
   const [application] = await tx
@@ -15,7 +16,7 @@ db.transaction(async (tx) => {
       applicationId: application.id,
       name: "Jack Crane",
       email: "jack@jackcrane.rocks",
-      password: "$2a$12$ceyyhPrQgJwg/6MlAZQ9..Vo.3/5llDTSyoRBiy5psoogD8et8yhy",
+      password: bcrypt.hashSync("password", 10),
     })
     .returning();
 

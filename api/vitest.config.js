@@ -8,5 +8,8 @@ export default defineConfig({
     hookTimeout: 30000,
     testTimeout: 30000,
     threads: false,
+    sequence: {
+      concurrent: false,
+    },
   },
 });

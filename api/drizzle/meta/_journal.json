@@ -78,6 +78,13 @@
       "when": 1769390600000,
       "tag": "0010_responsible_bi_beast",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1769390700000,
+      "tag": "0011_perfect_hobgoblin",
+      "breakpoints": true
     }
   ]
 }

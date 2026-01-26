@@ -9,6 +9,7 @@ import path from "path";
 import {
   applicationsTable,
   eventsTable,
+  invitationsTable,
   usersTable,
 } from "../../db/schema.js";
 
@@ -17,6 +18,8 @@ const pool = new pg.Pool({
 });
 
 export const testDb = drizzle(pool);
+
+let migrationPromise = null;
 
 export async function ensureExtensions() {
   try {
@@ -33,9 +36,17 @@ export async function ensureExtensions() {
 }
 
 export async function migrateDatabase() {
-  await ensureExtensions();
-  const migrationsFolder = path.join(process.cwd(), "drizzle");
-  await migrate(testDb, { migrationsFolder });
+  if (migrationPromise) {
+    return migrationPromise;
+  }
+
+  migrationPromise = (async () => {
+    await ensureExtensions();
+    const migrationsFolder = path.join(process.cwd(), "drizzle");
+    await migrate(testDb, { migrationsFolder });
+  })();
+
+  return migrationPromise;
 }
 
 export async function resetDatabase() {
@@ -94,6 +105,33 @@ export async function recordUserCreatedEvent({ userId, applicationId }) {
     applicationId,
     type: "USER_CREATED",
   });
+}
+
+export async function createInvitation({
+  applicationId,
+  email = `invitee-${randomUUID()}@example.com`,
+  name = "Invited User",
+  entitlements = [],
+  status = "pending",
+  code = randomUUID().replace(/-/g, ""),
+} = {}) {
+  if (!applicationId) {
+    throw new Error("applicationId is required to create an invitation");
+  }
+
+  const [invitation] = await testDb
+    .insert(invitationsTable)
+    .values({
+      applicationId,
+      email,
+      name,
+      entitlements,
+      status,
+      code,
+    })
+    .returning();
+
+  return invitation;
 }
 
 export async function closeDatabaseConnections() {

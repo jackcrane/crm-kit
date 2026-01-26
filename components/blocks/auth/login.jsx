@@ -5,7 +5,7 @@ import { BASE } from "../../src/App";
 import { Turnstile } from "../shared/turnstile";
 import "./login.css";
 
-const APPLICATION_ID = "app_0792f8a84bed4f04bd07311020ee5c37";
+const APPLICATION_ID = "app_3066c79aa1d14d558815ff30d1805bcf";
 
 const request = async (url, { method = "GET", body } = {}) => {
   const res = await fetch(url, {

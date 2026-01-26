@@ -6,21 +6,34 @@ import {
 } from "../../../../tests/helpers/db.js";
 import { startTestServer } from "../../../../tests/helpers/server.js";
 
+let sharedServerPromise = null;
+let stopRegistered = false;
+
 export function useIntegrationServer() {
   const state = { server: null };
 
   beforeAll(async () => {
-    await migrateDatabase();
-    await resetDatabase();
-    state.server = await startTestServer();
+    if (!sharedServerPromise) {
+      sharedServerPromise = (async () => {
+        await migrateDatabase();
+        await resetDatabase();
+        return startTestServer();
+      })();
+    }
+
+    state.server = await sharedServerPromise;
   });
 
-  afterAll(async () => {
-    if (state.server) {
-      await state.server.stop();
-    }
-    await closeDatabaseConnections();
-  });
+  if (!stopRegistered) {
+    stopRegistered = true;
+    afterAll(async () => {
+      if (sharedServerPromise) {
+        const server = await sharedServerPromise;
+        await server.stop();
+      }
+      await closeDatabaseConnections();
+    });
+  }
 
   beforeEach(async () => {
     await resetDatabase();

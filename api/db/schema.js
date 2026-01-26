@@ -53,6 +53,12 @@ export const eventTypeEnum = pgEnum("event_type", [
   "SYSTEM",
 ]);
 
+export const invitationStatusEnum = pgEnum("invitation_status", [
+  "pending",
+  "accepted",
+  "rescinded",
+]);
+
 export const eventsTable = pgTable("events", {
   id: text()
     .primaryKey()
@@ -68,4 +74,22 @@ export const eventsTable = pgTable("events", {
   metadata: jsonb().notNull().default({}),
 
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});
+
+export const invitationsTable = pgTable("invitations", {
+  id: text()
+    .primaryKey()
+    .default(sql`'inv_' || replace(gen_random_uuid()::text, '-', '')`),
+  applicationId: text()
+    .notNull()
+    .references(() => applicationsTable.id, { onDelete: "cascade" }),
+
+  email: varchar({ length: 255 }).notNull(),
+  name: varchar({ length: 255 }),
+  entitlements: text().array().notNull().default(sql`'{}'::text[]`),
+  code: text().notNull().unique(),
+  status: invitationStatusEnum("status").notNull().default("pending"),
+
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });

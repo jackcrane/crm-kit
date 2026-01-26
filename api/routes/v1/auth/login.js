@@ -77,7 +77,6 @@ export const post = [
       }
 
       if (application.enforceTurnstile) {
-        const turnstileResponse = data["cf-turnstile-response"];
         if (!turnstileResponse) {
           return res.status(401).json(errors.invalid_credentials);
         }
