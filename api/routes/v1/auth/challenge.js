@@ -5,7 +5,7 @@ import { db } from "../../../util/db.js";
 import { applicationsTable, usersTable } from "../../../db/schema.js";
 import { and, eq } from "drizzle-orm";
 import { validateTurnstile } from "../../../util/validateTurnstile.js";
-import { authenticator } from "otplib";
+import { verify as verifyOtp } from "otplib";
 
 const challengeSchema = z.object({
   nonce: z.string(),
@@ -100,12 +100,10 @@ export const post = [
       return res.status(401).json(errors.invalid_challenge);
     }
 
-    let isValid = false;
-    try {
-      isValid = authenticator.check(data.response, user.otpSecret);
-    } catch (err) {
-      return res.status(401).json(errors.invalid_challenge_response);
-    }
+    const { valid: isValid } = await verifyOtp({
+      secret: user.otpSecret,
+      token: data.response,
+    });
 
     if (!isValid) {
       return res.status(401).json(errors.invalid_challenge_response);
