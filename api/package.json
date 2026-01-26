@@ -4,10 +4,16 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "yarn test:docker",
+    "test:docker": "TEST_COMMAND=\"npm ci && npm run migrate:apply && npm run test:integration\" docker compose -f docker-compose.test.yml up --abort-on-container-exit --remove-orphans",
+    "test:integration": "vitest run --dir routes/v1/auth/__tests__",
+    "test:coverage": "yarn coverage",
+    "test:coverage:inner": "vitest run --dir routes/v1/auth/__tests__ --coverage",
     "start": "yarn index.js",
     "dev": "nodemon index.js",
-    "migrate": "npx drizzle-kit generate && npx drizzle-kit migrate"
+    "migrate": "npx drizzle-kit generate && npx drizzle-kit migrate",
+    "migrate:apply": "npx drizzle-kit migrate",
+    "coverage": "TEST_COMMAND=\"npm ci && npm run migrate:apply && npm run test:coverage:inner\" docker compose -f docker-compose.test.yml up --abort-on-container-exit --remove-orphans"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +26,7 @@
     "drizzle-orm": "^0.45.1",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
+    "node-fetch": "^3.3.2",
     "otplib": "^13.2.0",
     "pg": "^8.17.2",
     "zodex": "^4.0.1"
@@ -29,8 +36,10 @@
     "@types/pg": "^8.16.0",
     "drizzle-kit": "^0.31.8",
     "nodemon": "^3.0.1",
+    "supertest": "^7.2.2",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }
