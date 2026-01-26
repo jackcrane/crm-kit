@@ -70,6 +70,7 @@ export const invitationStatusEnum = pgEnum("invitation_status", [
   "pending",
   "accepted",
   "rescinded",
+  "expired",
 ]);
 
 export const eventsTable = pgTable("events", {

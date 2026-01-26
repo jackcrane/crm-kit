@@ -114,6 +114,7 @@ export async function createInvitation({
   entitlements = [],
   status = "pending",
   code = randomUUID().replace(/-/g, ""),
+  createdAt,
 } = {}) {
   if (!applicationId) {
     throw new Error("applicationId is required to create an invitation");
@@ -128,6 +129,7 @@ export async function createInvitation({
       entitlements,
       status,
       code,
+      ...(createdAt ? { createdAt } : {}),
     })
     .returning();
 

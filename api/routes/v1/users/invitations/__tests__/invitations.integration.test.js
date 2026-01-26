@@ -150,6 +150,86 @@ describe("✅ Invitations endpoints", () => {
     expect(newUser).toBeTruthy();
   });
 
+  it("expires invitations older than 24 hours when retrieved", async () => {
+    const application = await createApplication();
+    const invitation = await createInvitation({
+      applicationId: application.id,
+      createdAt: new Date(Date.now() - 25 * 60 * 60 * 1000),
+    });
+
+    const response = await request(serverState.server.baseUrl)
+      .get(`/v1/users/invitations/${invitation.id}`)
+      .set("x-application-id", application.id);
+
+    expect(response.status).toBe(200);
+    expect(response.body.invitation.status).toBe("expired");
+
+    const [updated] = await testDb
+      .select()
+      .from(invitationsTable)
+      .where(eq(invitationsTable.id, invitation.id));
+    expect(updated.status).toBe("expired");
+  });
+
+  it("rejects accepting an expired invitation", async () => {
+    const application = await createApplication();
+    const invitation = await createInvitation({
+      applicationId: application.id,
+      createdAt: new Date(Date.now() - 25 * 60 * 60 * 1000),
+    });
+
+    const response = await request(serverState.server.baseUrl)
+      .post(`/v1/users/invitations/${invitation.id}/accept`)
+      .set("x-application-id", application.id)
+      .send({ password: "Password123!" });
+
+    expect(response.status).toBe(400);
+    expect(response.body.reason).toBe("invitation_expired");
+  });
+
+  it("re-inviting after rescind overwrites existing invitation", async () => {
+    const application = await createApplication();
+    const rescinded = await createInvitation({
+      applicationId: application.id,
+      email: "invited@example.com",
+      status: "rescinded",
+      code: "oldcode",
+    });
+
+    const { user } = await createUser({
+      applicationId: application.id,
+      entitlements: ["invitations:write"],
+    });
+    const token = makeToken(user.id);
+
+    const response = await request(serverState.server.baseUrl)
+      .post("/v1/users/invitations")
+      .set("authorization", `Bearer ${token}`)
+      .set("x-application-id", application.id)
+      .send({
+        email: "invited@example.com",
+        name: "Reinvited User",
+        entitlements: ["users:read"],
+      });
+
+    expect(response.status).toBe(201);
+    expect(response.body.status).toBe("success");
+    expect(response.body.invitations).toHaveLength(1);
+
+    const updated = response.body.invitations[0];
+    expect(updated.id).toBe(rescinded.id);
+    expect(updated.status).toBe("pending");
+
+    const [stored] = await testDb
+      .select()
+      .from(invitationsTable)
+      .where(eq(invitationsTable.id, rescinded.id));
+
+    expect(stored.entitlements).toEqual(["users:read"]);
+    expect(stored.status).toBe("pending");
+    expect(stored.code).not.toBe("oldcode");
+  });
+
   it("rescinds a pending invitation when caller has write entitlements", async () => {
     const application = await createApplication();
     const invitation = await createInvitation({

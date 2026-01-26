@@ -1,7 +1,7 @@
 import z from "zod";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { and, eq, or } from "drizzle-orm";
+import { and, eq, or, sql } from "drizzle-orm";
 import { db } from "../../../../../util/db.js";
 import { invitationsTable, usersTable } from "../../../../../db/schema.js";
 import { validateTurnstile } from "../../../../../util/validateTurnstile.js";
@@ -27,6 +27,11 @@ const errors = {
     reason: "invitation_not_pending",
     message: "Invitation is not pending.",
   },
+  invitation_expired: {
+    status: "failure",
+    reason: "invitation_expired",
+    message: "Invitation has expired.",
+  },
   invalid_captcha: {
     status: "failure",
     reason: "invalid_captcha",
@@ -35,6 +40,17 @@ const errors = {
 };
 
 async function findInvitation(invitationId, applicationId) {
+  await db
+    .update(invitationsTable)
+    .set({ status: "expired", updatedAt: new Date() })
+    .where(
+      and(
+        eq(invitationsTable.applicationId, applicationId),
+        eq(invitationsTable.status, "pending"),
+        sql`${invitationsTable.createdAt} < now() - interval '24 hours'`,
+      ),
+    );
+
   const [invitation] = await db
     .select()
     .from(invitationsTable)
@@ -69,6 +85,10 @@ export const post = [
 
     if (!invitation) {
       return res.status(404).json(errors.invitation_not_found);
+    }
+
+    if (invitation.status === "expired") {
+      return res.status(400).json(errors.invitation_expired);
     }
 
     if (invitation.status !== "pending") {
