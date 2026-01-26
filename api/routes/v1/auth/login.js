@@ -11,6 +11,7 @@ import { applicationsTable, usersTable } from "../../../db/schema.js";
 import { and, eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { validateTurnstile } from "../../../util/validateTurnstile.js";
 
 const errors = {
   invalid_submission_format: {
@@ -26,6 +27,11 @@ const errors = {
     message: "Invalid credentials.",
     comment:
       "Refer to https://docs.crm-kit.com/blocks/access/login.html for more information.",
+  },
+  invalid_captcha: {
+    status: "failure",
+    reason: "invalid_captcha",
+    message: "Invalid captcha.",
   },
 };
 
@@ -68,6 +74,23 @@ export const post = [
 
       if (application.loginEnabled === false) {
         return res.status(401).json(errors.invalid_credentials);
+      }
+
+      if (application.enforceTurnstsile) {
+        const turnstileResponse = data["cf-turnstile-response"];
+        if (!turnstileResponse) {
+          return res.status(401).json(errors.invalid_credentials);
+        }
+
+        const valid = await validateTurnstile(
+          application.cfTurnstileSecretKey,
+          turnstileResponse,
+          req.ip,
+        );
+
+        if (!valid) {
+          return res.status(401).json(errors.invalid_captcha);
+        }
       }
 
       const token = jwt.sign(

@@ -1,0 +1,1 @@
+ALTER TABLE "applications" ADD COLUMN "enforceTurnstsile" boolean DEFAULT false NOT NULL;
