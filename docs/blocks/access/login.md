@@ -95,8 +95,7 @@ This is the response that is returned when the login was successful but requires
 ```
 
 Challenge type will be one of the following:
-- `2fa`: Two-factor authentication. The user has recieved a code via SMS or email and needs to enter it in the application.
-- `totp`: Time-based one-time password. The user has a code in their authenticator app that needs to be entered in the application.
+- `mfa`: Multi-factor authentication. See [MFA](./mfa.md) for handling this challenge type.
 
 The challenge nonce is a random string that must be included with the challenge response request.
 

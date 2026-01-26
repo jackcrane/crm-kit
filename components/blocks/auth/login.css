@@ -30,3 +30,24 @@
   border-radius: 5px;
   background-color: #ffebee;
 }
+
+.linkButton {
+  background: none;
+  border: none;
+  color: #0d47a1;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.callout {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  background: #f7f7f7;
+  word-break: break-all;
+}
+
+.tokenRow {
+  margin-top: 6px;
+}

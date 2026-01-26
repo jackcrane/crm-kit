@@ -94,11 +94,21 @@ export const post = [
       }
 
       if (user.mfaEnabled) {
+        const challengeNonce = jwt.sign(
+          {
+            challengeType: "mfa",
+            userId: user.id,
+            applicationId: req.applicationId,
+          },
+          process.env.JWT_SECRET,
+          { expiresIn: "5m" },
+        );
+
         return res.status(200).json({
           status: "challenge",
           challenge: {
             type: "mfa",
-            nonce: "user.mfaNonce",
+            nonce: challengeNonce,
           },
         });
       }
