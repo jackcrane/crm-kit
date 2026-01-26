@@ -31,14 +31,26 @@ export default defineConfig({
         ],
       },
       {
-        text: "Blocks",
+        text: "User Access",
         items: [
           {
-            text: "User Access",
+            text: "Login",
+            link: "/blocks/access/login",
+          },
+          {
+            text: "New Accounts",
             items: [
               {
-                text: "Login",
-                link: "/blocks/access/login",
+                link: "/blocks/access/invitations",
+                text: "Inviting users",
+              },
+              {
+                link: "/blocks/access/invitations/accepting",
+                text: "Accepting invitations",
+              },
+              {
+                link: "/blocks/access/invitations/retrieving",
+                text: "Retrieving invitations",
               },
             ],
           },
