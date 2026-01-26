@@ -1,0 +1,1 @@
+ALTER TABLE "applications" RENAME COLUMN "enforceTurnstsile" TO "enforceTurnstile";

@@ -50,6 +50,20 @@
       "when": 1769386959611,
       "tag": "0006_regular_iceman",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1769389893416,
+      "tag": "0007_illegal_dazzler",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1769390043721,
+      "tag": "0008_redundant_alice",
+      "breakpoints": true
     }
   ]
 }

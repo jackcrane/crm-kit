@@ -20,7 +20,7 @@ export const applicationsTable = pgTable("applications", {
   cfTurnstileSiteKey: varchar({ length: 255 }),
   cfTurnstileSecretKey: varchar({ length: 255 }),
   loginAvailable: boolean().notNull().default(true),
-  enforceTurnstsile: boolean().notNull().default(false),
+  enforceTurnstile: boolean().notNull().default(false),
 
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
@@ -37,6 +37,8 @@ export const usersTable = pgTable("users", {
   name: varchar({ length: 255 }).notNull(),
   email: varchar({ length: 255 }).notNull(),
   password: varchar({ length: 255 }).notNull(),
+
+  mfaEnabled: boolean().notNull().default(false),
 
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),

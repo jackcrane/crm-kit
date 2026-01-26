@@ -82,7 +82,7 @@ Reason will be one of the following:
 - `invalid_captcha`: The captcha was invalid
 
 == Challenge Required
-This is the response that is returned when the login was successful but requires additional steps to complete. (e.g. 2FA or MFA). This will be accompanied by an HTTP `401` status code.
+This is the response that is returned when the login was successful but requires additional steps to complete. (e.g. 2FA or MFA). This will be accompanied by an HTTP `200` status code.
 
 ```json
 {

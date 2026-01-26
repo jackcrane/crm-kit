@@ -76,7 +76,7 @@ export const post = [
         return res.status(401).json(errors.invalid_credentials);
       }
 
-      if (application.enforceTurnstsile) {
+      if (application.enforceTurnstile) {
         const turnstileResponse = data["cf-turnstile-response"];
         if (!turnstileResponse) {
           return res.status(401).json(errors.invalid_credentials);
@@ -91,6 +91,16 @@ export const post = [
         if (!valid) {
           return res.status(401).json(errors.invalid_captcha);
         }
+      }
+
+      if (user.mfaEnabled) {
+        return res.status(200).json({
+          status: "challenge",
+          challenge: {
+            type: "mfa",
+            nonce: "user.mfaNonce",
+          },
+        });
       }
 
       const token = jwt.sign(
