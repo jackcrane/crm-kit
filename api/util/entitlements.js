@@ -3,13 +3,61 @@ import { and, eq } from "drizzle-orm";
 import { db } from "./db.js";
 import { usersTable } from "../db/schema.js";
 
-export const ENTITLEMENTS = [
-  "superuser",
-  "users:read",
-  "users:write",
-  "invitations:read",
-  "invitations:write",
+export const ENTITLEMENT_DEFINITIONS = [
+  {
+    name: "superuser",
+    description: "This user is a superuser and has all permissions.",
+    sort: 0,
+  },
+  {
+    name: "users:read",
+    description: "The user can read all users.",
+    sort: 1,
+  },
+  {
+    name: "users:write",
+    description:
+      "The user can update and delete users. Users need invitations:write to create new users.",
+    sort: 2,
+  },
+  {
+    name: "invitations:read",
+    description: "The user can read all invitations.",
+    sort: 3,
+  },
+  {
+    name: "invitations:write",
+    description: "The user can create, update, and rescind invitations.",
+    sort: 4,
+  },
+  {
+    name: "entitlements:read",
+    description: "The user can view available entitlements and user grants.",
+    sort: 5,
+  },
+  {
+    name: "entitlements:write",
+    description: "The user can modify user entitlements.",
+    sort: 6,
+  },
 ];
+
+export const ENTITLEMENTS = ENTITLEMENT_DEFINITIONS.map(
+  (entitlement) => entitlement.name,
+);
+
+export function getEntitlementDefinitions() {
+  return [...ENTITLEMENT_DEFINITIONS].sort((a, b) => {
+    if (a.sort === b.sort) {
+      return a.name.localeCompare(b.name);
+    }
+    return a.sort - b.sort;
+  });
+}
+
+export function isValidEntitlement(value) {
+  return ENTITLEMENTS.includes(value);
+}
 
 function normalizeRequired(required) {
   if (!required) return [];

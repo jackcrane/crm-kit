@@ -56,7 +56,21 @@ export default defineConfig({
           },
           {
             text: "Entitlements",
-            link: "/entitlements",
+            link: "/blocks/access/entitlements",
+            items: [
+              {
+                text: "Listing all entitlements",
+                link: "/blocks/access/entitlements/listing",
+              },
+              {
+                text: "Retrieving a user's entitlements",
+                link: "/blocks/access/entitlements/retrieving",
+              },
+              {
+                text: "Modifying a user's entitlements",
+                link: "/blocks/access/entitlements/modifying",
+              },
+            ],
           },
         ],
       },

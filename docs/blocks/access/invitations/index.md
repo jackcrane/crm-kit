@@ -53,3 +53,7 @@ If you wish to invite multiple users, you can submit an array of objects instead
 | `entitlements` | [[Entitlement](/blocks/access/entitlements.html)] | No | The entitlements to grant to the user. If not provided, the user will have the most restrictive entitlements possible, meaning they will really only be allowed to log in. |
 | `message` | string | No | A message to include in the invitation email |
 | `ctaUrl` | String | No | A URL to include in a "Accept Invitation" button in the invitation email. This url will be appended with `?code=<invitation-code>`. |
+
+## Required entitlements
+
+The requesting user must have the `invitations:write` entitlement to invite a user.

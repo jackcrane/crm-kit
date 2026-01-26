@@ -16,6 +16,8 @@ export const entitlementEnum = pgEnum("entitlement", [
   "users:write",
   "invitations:read",
   "invitations:write",
+  "entitlements:read",
+  "entitlements:write",
 ]);
 
 export const applicationsTable = pgTable("applications", {

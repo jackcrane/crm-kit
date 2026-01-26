@@ -84,3 +84,6 @@ GET https://api.crm-kit.com/v1/users/invitations?page=2&limit=10
 | `createdAt` | string | The date and time the invitation was created. |
 | `updatedAt` | string | The date and time the invitation was last updated. |
 
+## Required entitlements
+
+The requesting user must have the `invitations:read` entitlement to retrieve invitations.
