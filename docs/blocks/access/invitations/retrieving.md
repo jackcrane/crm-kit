@@ -79,6 +79,8 @@ You can refine the search by providing a `searchFields` query parameter. The sea
 GET https://api.crm-kit.com/v1/users/invitations?search=john&searchFields=email,name
 ```
 
+Valid `searchFields` values are `email`, `name`, `code`, and `id`. If omitted, all four are used. Unknown fields will return a `400` response.
+
 #### Advanced searches
 
 You can run advanced searches by providing a `searchDsl` query parameter. This will be a JSON object as described in the [Search DSL documentation](/blocks/search-dsl.html).
@@ -86,6 +88,8 @@ You can run advanced searches by providing a `searchDsl` query parameter. This w
 ```
 GET https://api.crm-kit.com/v1/users/invitations?searchDsl={"email": {"EQ": "john@example.com"}}
 ```
+
+The invitations endpoint accepts the following `searchDsl` fields: `id`, `email`, `name`, `code`, `status`, `createdAt`, and `updatedAt`. Logical operators are fully supported, and the `ORDER` clause can be used to sort by any of those fields (for example, `{"ORDER": {"createdAt": "DESC"}}`). Pagination still uses the `page` and `limit` query parameters.
 
 ### Pagination
 

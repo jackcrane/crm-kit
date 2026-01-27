@@ -105,6 +105,106 @@ describe("✅ Invitations endpoints", () => {
     expect(response.body.total).toBe(2);
   });
 
+  it("filters invitations with search term across default fields", async () => {
+    const application = await createApplication();
+    await createInvitation({
+      applicationId: application.id,
+      email: "keep-me@example.com",
+      name: "Keep Me",
+    });
+    await createInvitation({
+      applicationId: application.id,
+      email: "match@example.com",
+      name: "Search Target",
+    });
+
+    const { user } = await createUser({
+      applicationId: application.id,
+      entitlements: ["invitations:read"],
+    });
+    const token = makeToken(user.id);
+
+    const response = await request(serverState.server.baseUrl)
+      .get("/v1/users/invitations")
+      .set("authorization", `Bearer ${token}`)
+      .set("x-application-id", application.id)
+      .query({ search: "match" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.invitations).toHaveLength(1);
+    expect(response.body.invitations[0].email).toBe("match@example.com");
+    expect(response.body.total).toBe(1);
+  });
+
+  it("respects searchFields when filtering", async () => {
+    const application = await createApplication();
+    await createInvitation({
+      applicationId: application.id,
+      email: "only-name@example.com",
+      name: "Special Name",
+    });
+    await createInvitation({
+      applicationId: application.id,
+      email: "special@example.com",
+      name: "Other Name",
+    });
+
+    const { user } = await createUser({
+      applicationId: application.id,
+      entitlements: ["invitations:read"],
+    });
+    const token = makeToken(user.id);
+
+    const response = await request(serverState.server.baseUrl)
+      .get("/v1/users/invitations")
+      .set("authorization", `Bearer ${token}`)
+      .set("x-application-id", application.id)
+      .query({ search: "special", searchFields: "name" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.invitations).toHaveLength(1);
+    expect(response.body.invitations[0].name).toBe("Special Name");
+    expect(response.body.total).toBe(1);
+  });
+
+  it("filters invitations with searchDsl", async () => {
+    const application = await createApplication();
+    await createInvitation({
+      applicationId: application.id,
+      email: "match@example.com",
+      name: "Target User",
+    });
+    await createInvitation({
+      applicationId: application.id,
+      email: "other@example.com",
+      name: "Other User",
+    });
+
+    const { user } = await createUser({
+      applicationId: application.id,
+      entitlements: ["invitations:read"],
+    });
+    const token = makeToken(user.id);
+
+    const searchDsl = {
+      AND: [
+        { email: { EQ: "match@example.com" } },
+        { name: { LIKE: "Target%" } },
+      ],
+    };
+
+    const response = await request(serverState.server.baseUrl)
+      .get("/v1/users/invitations")
+      .set("authorization", `Bearer ${token}`)
+      .set("x-application-id", application.id)
+      .query({ searchDsl: JSON.stringify(searchDsl) });
+
+    expect(response.status).toBe(200);
+    expect(response.body.invitations).toHaveLength(1);
+    expect(response.body.total).toBe(1);
+    expect(response.body.invitations[0].email).toBe("match@example.com");
+  });
+
   it("retrieves an invitation by code without auth", async () => {
     const application = await createApplication();
     const invitation = await createInvitation({
