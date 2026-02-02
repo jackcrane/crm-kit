@@ -16,3 +16,6 @@ The following entitlements are available:
 | `users:write` | The user can update and delete users. Users need `invitations:write` to create new users |
 | `invitations:read` | The user can read all invitations. |
 | `invitations:write` | The user can create, update, and rescind invitations |
+| `people:read` | The user can read all people (CRM contacts) |
+| `people.financial:read` | The user can read information regarding people's financial details (redacted credit card info, lifetime value)
+| `people.contact:read` | The user can read people's contact information |

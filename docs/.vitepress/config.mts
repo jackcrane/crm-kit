@@ -75,6 +75,10 @@ export default defineConfig({
               },
             ],
           },
+          {
+            text: "Listing all users",
+            link: "/blocks/access/users/retrieving",
+          },
         ],
       },
       {
@@ -92,6 +96,20 @@ export default defineConfig({
           {
             text: "Modifying a user's entitlements",
             link: "/blocks/entitlements/modifying",
+          },
+        ],
+      },
+      {
+        text: "People",
+        link: "/blocks/people",
+        items: [
+          {
+            text: "Creating a person",
+            link: "/blocks/people/creating",
+          },
+          {
+            text: "Retrieving people",
+            link: "/blocks/people/retrieving",
           },
         ],
       },
