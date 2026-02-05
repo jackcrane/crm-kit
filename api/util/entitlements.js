@@ -40,6 +40,22 @@ export const ENTITLEMENT_DEFINITIONS = [
     description: "The user can modify user entitlements.",
     sort: 6,
   },
+  {
+    name: "people:read",
+    description: "The user can read all people (CRM contacts).",
+    sort: 7,
+  },
+  {
+    name: "people.financial:read",
+    description:
+      "The user can view people's financial information (e.g., lifetime value).",
+    sort: 8,
+  },
+  {
+    name: "people.contact:read",
+    description: "The user can view people's contact information (email, phone).",
+    sort: 9,
+  },
 ];
 
 export const ENTITLEMENTS = ENTITLEMENT_DEFINITIONS.map(
@@ -104,6 +120,10 @@ async function userHasEntitlements(user, required) {
   return required.every((entitlement) =>
     entitlements.includes(entitlement),
   );
+}
+
+export function userHasEntitlement(user, entitlement) {
+  return userHasEntitlements(user, [entitlement]);
 }
 
 export async function checkEntitlements(userId, required, applicationId) {

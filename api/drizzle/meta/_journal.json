@@ -113,6 +113,13 @@
       "when": 1769470100000,
       "tag": "0015_revoke_users",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1770061964447,
+      "tag": "0016_people",
+      "breakpoints": true
     }
   ]
 }
